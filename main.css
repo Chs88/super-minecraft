@@ -1,0 +1,43 @@
+body {
+
+}
+
+.coordTextBox {
+	width: 45px;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+	background-color: #754468;
+	color: white;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+tr:hover {background-color: #bd8eb0;}
+
+.delete-btn {
+  border: none;
+  color: #57030a;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  background-color: #b82009;
+}
