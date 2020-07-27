@@ -1,179 +1,189 @@
 const app = {
-	$coordinatesTableBody: null,
+  $coordinatesTableBody: null,
 
-	addCoordinateForm: {
-		$self: null,
-		$saveBtn: null,
-		$xCoord: null,
-		$yCoord: null,
-		$zCoord: null,
-		$biome: null,
-		$description: null,
-	},
+  addCoordinateForm: {
+    $self: null,
+    $saveBtn: null,
+    $xCoord: null,
+    $yCoord: null,
+    $zCoord: null,
+    $biome: null,
+    $description: null,
+  },
 
-	$removeCoordinateBtns: null,
+  $removeCoordinateBtns: null,
 
-	biomes: [], // empty for now, indexes should be used instead of strings like "swamp"
-	coordinates: [
-		// {id: 1, x: 14, y: 23, z: -500, biome: "swamp", description: "lovak"},
-		// {id: 2, x: 37, y: 13, z: 3400, biome: "dark_forest", description: ""},
-		// {id: 3, x: 73, y: 63, z: 100, biome: "forest", description: ""},
-		// {id: 4, x: 58, y: 0, z: 200, biome: "desert", description: ""},
-		// {id: 5, x: 96, y: 46, z: 300, biome: "ocean", description: ""},
-	],
-	init: function () {
-		this.loadLocalStorage();
-		this.cacheHtml();
-		this.bindEvents();
-		this.updateTable();
-	},
-	cacheHtml: function () {
-		// gets the first tbody element of the table with the id "coordinates-table"
-		this.$coordinatesTableBody = document.getElementById("coordinates-table").tBodies[0];
+  biomes: [], // empty for now, indexes should be used instead of strings like "swamp"
+  coordinates: [
+    // {id: 1, x: 14, y: 23, z: -500, biome: "swamp", description: "lovak"},
+    // {id: 2, x: 37, y: 13, z: 3400, biome: "dark_forest", description: ""},
+    // {id: 3, x: 73, y: 63, z: 100, biome: "forest", description: ""},
+    // {id: 4, x: 58, y: 0, z: 200, biome: "desert", description: ""},
+    // {id: 5, x: 96, y: 46, z: 300, biome: "ocean", description: ""},
+  ],
+  init: function () {
+    this.loadLocalStorage();
+    this.cacheHtml();
+    this.bindEvents();
+    this.updateTable();
+  },
+  cacheHtml: function () {
+    // gets the first tbody element of the table with the id "coordinates-table"
+    this.$coordinatesTableBody = document.getElementById(
+      "coordinates-table"
+    ).tBodies[0];
 
-		// gets the form for adding a new coordinate and caches all the input fields in an object (an object is used to group together similar stuff)
-		this.addCoordinateForm = {
-			$self: document.getElementById("add-coordinate"),
-			$saveBtn: document.getElementById("saveBtn"),
-			$xCoord: document.getElementById("xCoord"),
-			$yCoord: document.getElementById("yCoord"),
-			$zCoord: document.getElementById("zCoord"),
-			$biome: document.getElementById("biome"),
-			$description: document.getElementById("description"),
-		};
+    // gets the form for adding a new coordinate and caches all the input fields in an object (an object is used to group together similar stuff)
+    this.addCoordinateForm = {
+      $self: document.getElementById("add-coordinate"),
+      $saveBtn: document.getElementById("saveBtn"),
+      $xCoord: document.getElementById("xCoord"),
+      $yCoord: document.getElementById("yCoord"),
+      $zCoord: document.getElementById("zCoord"),
+      $biome: document.getElementById("biome"),
+      $description: document.getElementById("description"),
+    };
 
-		// this.$removeCoordinateBtns = document.getElementsByClassName("delete-btn");
-		// console.log(this.$removeCoordinateBtns);
-		// for (var i = 0; i < this.$removeCoordinateBtns.length; i++) {
-		// 	this.$removeCoordinateBtns[i].onclick = this.removeCoordinate;
-		// }
-	},
-	bindEvents: function () {
-		this.addCoordinateForm.$saveBtn.addEventListener("click", this.addCoordinate.bind(this));
-	},
-	createNewCoordinateObj: function (x, y, z, biome, description) {
-		return {
-			id: this.coordinates.length + 1,
-			x: x,
-			y: y,
-			z: z,
-			biome: biome,
-			description: description,
-		};
-	},
-	createStupidDom: function (id, x, y, z, biome, description) {
-		const fields = [id, x, y, z, biome, description];
-		const tds = fields.map(function (field) {
-			const td = document.createElement('td');
-			td.innerHTML = field;
+    // this.$removeCoordinateBtns = document.getElementsByClassName("delete-btn");
+    // console.log(this.$removeCoordinateBtns);
+    // for (var i = 0; i < this.$removeCoordinateBtns.length; i++) {
+    // 	this.$removeCoordinateBtns[i].onclick = this.removeCoordinate;
+    // }
+  },
+  bindEvents: function () {
+    this.addCoordinateForm.$saveBtn.addEventListener(
+      "click",
+      this.addCoordinate.bind(this)
+    );
+  },
+  createNewCoordinateObj: function (x, y, z, biome, description) {
+    return {
+      id: this.coordinates.length + 1,
+      x: x,
+      y: y,
+      z: z,
+      biome: biome,
+      description: description,
+    };
+  },
+  createStupidDom: function (id, x, y, z, biome, description) {
+    const fields = [id, x, y, z, biome, description];
+    const tds = fields.map(function (field) {
+      const td = document.createElement("td");
+      td.innerHTML = field;
 
-			return td;
-		});
+      return td;
+    });
 
-		const deleteBtn = document.createElement('button');
-		deleteBtn.type = "button";
-		deleteBtn.innerHTML = "DELETE";
-		deleteBtn.value = id;
-		deleteBtn.classList.add('delete-btn');
-		deleteBtn.addEventListener("click", this.removeCoordinate.bind(this));
-		tds.push(deleteBtn);
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.innerHTML = "DELETE";
+    deleteBtn.value = id;
+    deleteBtn.classList.add("delete-btn");
+    deleteBtn.addEventListener("click", this.removeCoordinate.bind(this));
+    tds.push(deleteBtn);
 
-		return tds;
-	},
-	resetForm: function() {
-		const $form = this.addCoordinateForm;
-		$form.$xCoord.value = ""; // value of input with id "xCoord"
-		$form.$yCoord.value = "";
-		$form.$zCoord.value = "";
-		$form.$biome.value = "";
-		$form.$description.value = "";
-	},
-	addCoordinate: function () {
-		// this is just an alias so we don't have to write "this.addCoordinateForm" 90 fucking times
-		const $form = this.addCoordinateForm;
-		// save old length of array - this is needed to properly add the new row to the table,
-		// since the lenght changes after we add the new coords
-		const oldLength = this.coordinates.length; 
+    return tds;
+  },
+  resetForm: function () {
+    const $form = this.addCoordinateForm;
+    $form.$xCoord.value = ""; // value of input with id "xCoord"
+    $form.$yCoord.value = "";
+    $form.$zCoord.value = "";
+    $form.$biome.value = "";
+    $form.$description.value = "";
+  },
+  addCoordinate: function () {
+    // this is just an alias so we don't have to write "this.addCoordinateForm" 90  times
+    const $form = this.addCoordinateForm;
+    // save old length of array - this is needed to properly add the new row to the table,
+    // since the lenght changes after we add the new coords
+    const oldLength = this.coordinates.length;
 
-		// .push returns the current length of the array it modified - this can be used to get the last element of the array
-		const newLength = this.coordinates.push(this.createNewCoordinateObj(
-			parseInt($form.$xCoord.value), // value of input with id "xCoord"
-			parseInt($form.$yCoord.value),
-			parseInt($form.$zCoord.value),
-			$form.$biome.value,
-			$form.$description.value
-		));
-		const newCoords = this.coordinates[newLength - 1];
-		const newRow = this.$coordinatesTableBody.insertRow(oldLength);
-		const tds = this.createStupidDom(
-			newCoords.id,
-			newCoords.x,
-			newCoords.y,
-			newCoords.z,
-			newCoords.biome,
-			newCoords.description
-		);
+    // .push returns the current length of the array it modified - this can be used to get the last element of the array
+    const newLength = this.coordinates.push(
+      this.createNewCoordinateObj(
+        parseInt($form.$xCoord.value), // value of input with id "xCoord"
+        parseInt($form.$yCoord.value),
+        parseInt($form.$zCoord.value),
+        $form.$biome.value,
+        $form.$description.value
+      )
+    );
+    const newCoords = this.coordinates[newLength - 1];
+    const newRow = this.$coordinatesTableBody.insertRow(oldLength);
+    const tds = this.createStupidDom(
+      newCoords.id,
+      newCoords.x,
+      newCoords.y,
+      newCoords.z,
+      newCoords.biome,
+      newCoords.description
+    );
 
-		for (let i = 0; i < tds.length; i++) {
-			newRow.appendChild(tds[i]);
-		}
+    for (let i = 0; i < tds.length; i++) {
+      newRow.appendChild(tds[i]);
+    }
 
-		this.resetForm();
-		this.saveLocalStorage();
-	},
-	removeCoordinate: function (e) {
-		const proceed = confirm("NIGGA ARE YOU SURE THO");
-		if (proceed == false) {
-			return;
-		}
-		
-		const rowToDelete = e.srcElement.closest('tr');
-		this.$coordinatesTableBody.removeChild(rowToDelete);
+    this.resetForm();
+    this.saveLocalStorage();
+  },
+  removeCoordinate: function (e) {
+    const proceed = confirm("Are you sure you want to delete?");
+    if (proceed == false) {
+      return;
+    }
 
-		const clickedId = parseInt(e.srcElement.value);
-		console.log(clickedId);
-		this.coordinates = this.coordinates.filter(function (coordinate) {
-			return coordinate.id !== clickedId;
-		});
+    const rowToDelete = e.srcElement.closest("tr");
+    this.$coordinatesTableBody.removeChild(rowToDelete);
 
-		this.saveLocalStorage();
-	},
+    const clickedId = parseInt(e.srcElement.value);
+    console.log(clickedId);
+    this.coordinates = this.coordinates.filter(function (coordinate) {
+      return coordinate.id !== clickedId;
+    });
 
-	saveLocalStorage: function () {
-		window.localStorage.setItem('coordinates', JSON.stringify(this.coordinates));
-	},
-	loadLocalStorage: function () {
-		const coordinates = JSON.parse(window.localStorage.getItem('coordinates')) || [];
+    this.saveLocalStorage();
+  },
 
-		this.coordinates = coordinates;
-	},
-	updateTable: function () {
-		// sets the content of the tbody to the new sexy string we've created
-		for (let i = 0; i < this.coordinates.length; i++) {
-			const currCoord = this.coordinates[i];
-			const tr = document.createElement('tr');
-			const tds = this.createStupidDom(
-				currCoord.id,
-				currCoord.x,
-				currCoord.y,
-				currCoord.z,
-				currCoord.biome,
-				currCoord.description
-			);
+  saveLocalStorage: function () {
+    window.localStorage.setItem(
+      "coordinates",
+      JSON.stringify(this.coordinates)
+    );
+  },
+  loadLocalStorage: function () {
+    const coordinates =
+      JSON.parse(window.localStorage.getItem("coordinates")) || [];
 
-			for (let j = 0; j < tds.length; j++) {
-				tr.appendChild(tds[j]);
-			}
+    this.coordinates = coordinates;
+  },
+  updateTable: function () {
+    // sets the content of the tbody to the new sexy string we've created
+    for (let i = 0; i < this.coordinates.length; i++) {
+      const currCoord = this.coordinates[i];
+      const tr = document.createElement("tr");
+      const tds = this.createStupidDom(
+        currCoord.id,
+        currCoord.x,
+        currCoord.y,
+        currCoord.z,
+        currCoord.biome,
+        currCoord.description
+      );
 
-			this.$coordinatesTableBody.appendChild(tr);
-		}
-	},
-}
+      for (let j = 0; j < tds.length; j++) {
+        tr.appendChild(tds[j]);
+      }
+
+      this.$coordinatesTableBody.appendChild(tr);
+    }
+  },
+};
 
 app.init();
 
-
-// UPCOMING FEATURE IN 1.15 - STAY TUNED, PLEASE LIKE AND CONSIDER SUBSCRIBING?
+// UPCOMING FEATURE IN 1.15
 // const biomes = [
 // 	"ocean",
 // 	"deep_ocean",
